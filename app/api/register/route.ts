@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-// import bcrypt from "bcrypt";
-// import prisma from "@/app/libs/prismadb";
+
+import prisma from "@/app/lib/prismadb";
 /**
  * @swagger
  * /api/users:
@@ -25,3 +25,22 @@ import { NextResponse } from "next/server";
  *
  *
  */
+export async function POST(request: Request) {
+  const body = await request.json();
+  const { email, name, password } = body;
+
+  try {
+    const user = await prisma.user.create({
+      data: {
+        email,
+        name,
+        password,
+      },
+    });
+
+    return NextResponse.json(user);
+  } catch (error) {
+    console.error("建立帳號出錯:", error);
+    return NextResponse.json({ error: error }, { status: 500 });
+  }
+}
